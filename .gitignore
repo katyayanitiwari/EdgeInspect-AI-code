@@ -1,0 +1,47 @@
+# Python environment and cache
+.venv/
+__pycache__/
+*.py[cod]
+
+# Dataset and runtime outputs (download/prepare locally)
+dataset/raw/
+dataset/processed/
+runs/
+logs/
+logs_dashboard.txt
+inference/output/
+reports/_figs/
+reports/showcase/
+app/samples/sample_people.jpg
+experiments/*_train_log.txt
+
+# Model weights: include only the two checkpoints required by the demo app.
+*.pt
+!yolov8n.pt
+!experiments/EXP-002/weights/best.pt
+*.onnx
+*.hef
+*.pte
+
+# Kaggle upload bundles/results are generated separately
+deployment/kaggle_upload/dataset/
+deployment/kaggle_upload/kernel/
+deployment/kaggle_upload/output/
+
+# Private notes, personal prompts, machine logs and installers: do not upload
+MY_NOTES_Done_and_Left.pdf
+RESUME_PROMPT.md
+EdgeInspect-AI_RESUME_PROMPT.md
+edgeinspect-dashboard.*
+tailscale-*
+*.msi
+*.log
+reports/reference_notes.html
+reports/EdgeInspect-AI_Vision_Progress.pdf
+
+# Local certificates and credentials
+.gradio/
+*.pem
+*.key
+.env
+.env.*
