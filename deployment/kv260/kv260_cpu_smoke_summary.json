@@ -1,0 +1,33 @@
+{
+  "measured_on": "2026-11-02",
+  "experiment": "EXP-002",
+  "model": "YOLOv8n",
+  "device": "KV260 CPU",
+  "board_os": "Ubuntu 24.04.2 LTS",
+  "architecture": "aarch64",
+  "kernel": "Linux 6.8.0-1015-xilinx",
+  "python": "3.12.3",
+  "torch": "2.14.0+cpu",
+  "torchvision": "0.29.0+cpu",
+  "ultralytics": "8.4.163",
+  "opencv": "5.0.0",
+  "numpy": "2.4.6",
+  "image_size": 320,
+  "confidence_threshold": 0.25,
+  "warmup": "one excluded warmup prediction per image",
+  "repeats_per_image": 3,
+  "images_measured": 6,
+  "median_latency_ms_across_images": 762.571,
+  "mean_latency_ms_across_images": 764.019,
+  "approx_fps_from_median_latency": 1.311,
+  "per_image": [
+    {"image": "crazing_101.jpg", "detections": 2, "median_latency_ms": 771.11},
+    {"image": "inclusion_102.jpg", "detections": 3, "median_latency_ms": 761.941},
+    {"image": "patches_109.jpg", "detections": 3, "median_latency_ms": 763.2},
+    {"image": "pitted_surface_10.jpg", "detections": 1, "median_latency_ms": 764.889},
+    {"image": "rolled-in_scale_102.jpg", "detections": 2, "median_latency_ms": 761.307},
+    {"image": "scratches_101.jpg", "detections": 1, "median_latency_ms": 761.668}
+  ],
+  "scope_note": "CPU inference smoke run only. Six sample images do not establish accuracy. No FPGA/DPU acceleration was used.",
+  "full_board_artifacts_on_external_drive": "EdgeInspect-KV260-results-2026-11-02/"
+}

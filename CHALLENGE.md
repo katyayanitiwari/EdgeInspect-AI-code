@@ -1,6 +1,6 @@
 # Bharat AI-SoC Challenge 2026–27 — official facts (PS5)
 
-Official source: https://arm-education.github.io/Arm-Developer-Labs/Bharat_AI_SoC_2026_27.html (checked 29 Oct 2026). Recheck this page before submission in case it changes. Details not stated there need verification from the organizers.
+Official source: https://arm-education.github.io/Arm-Developer-Labs/Bharat_AI_SoC_2026_27.html (checked 30 Oct 2026). Recheck this page before submission in case it changes. Details not stated there need verification from the organizers.
 
 ## Dates currently listed
 
@@ -26,4 +26,4 @@ The stated objective includes detecting surface defects/cracks/anomalies, classi
 
 ## How this project maps to the requirement
 
-The current laptop prototype has a rule-based advisor. Llama + ExecuTorch deployment is still unfinished and unverified, so the current prototype does not yet demonstrate that required technology. Raspberry Pi and Hailo operation have not been measured. The NEU-DET model is specific to six steel-surface classes and is not proof of general defect detection across arbitrary products.
+The current laptop prototype has a rule-based advisor. Llama + ExecuTorch deployment is still unfinished and unverified, so the current prototype does not yet demonstrate that required technology. Kria KV260 and Renesas RA6E2 operation have not been measured. The NEU-DET model is specific to six steel-surface classes and is not proof of general defect detection across arbitrary products.

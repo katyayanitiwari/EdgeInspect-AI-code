@@ -1,26 +1,30 @@
-# Before uploading this folder
+# Phase 1 submission checklist
 
-This folder contains the refreshed project source, experiment records, sample videos, dashboard, and the two model files needed for the demo.
+Updated 24 November 2026 from the organizer email received 23 November. The email sets the deadline to **25 November 2026, 11:59 pm IST**. The public challenge page still shows 23 November; follow the newer organizer email and recheck the submission form.
 
-## Keep private / do not upload
+## Required items from the organizer email
 
-- `MY_NOTES_Done_and_Left.pdf` — personal notes.
-- `RESUME_PROMPT.md` and `EdgeInspect-AI_RESUME_PROMPT.md` — personal continuation prompts.
-- `edgeinspect-dashboard.*`, `tailscale-*`, `*.msi`, and `*.log` — local setup/debug material.
-- `logs/`, `.gradio/`, `.env*`, certificates/keys, and any credentials.
+- [ ] Public GitHub/GitLab repository URL with source code and relevant documentation
+- [ ] Review the prepared two-minute video, upload it publicly to YouTube or Google Drive, and copy its URL; preferred 1080p, 16:9, MP4
+- [ ] Final project report PDF/DOCX covering methodology, results, hardware utilization, and optimization techniques
+- [ ] Mentor review/approval if available (recommended by the organizer)
+- [ ] Enter repository URL, video URL, and report in the designated form fields
+- [ ] Submit once only; organizer says duplicate submissions will not replace the first
 
-The `.gitignore` excludes these files. If using Git, confirm the pending changes with `git status --short` and check that none of the private filenames appear before committing. Do not manually drag every file into a website upload form, because that can bypass `.gitignore`.
+## Files prepared in BHARAT EDGE
 
-## Included / intentionally not included
+- Curated source archive: `EdgeInspect-AI-Phase1-Source.zip` (review its manifest)
+- Report: `reports/EdgeInspect-AI_Phase1_Technical_Report.pdf`
+- Editable report source: `reports/Phase1_Technical_Report.md`
+- Prepared video: `demo/EdgeInspect-AI-Phase1-Demo.mp4` (two minutes, 1920×1080, 15 FPS). It is a captioned, asset-based walkthrough using actual saved model outputs and project records, not a live desktop capture or voiceover. Review it before public upload; the video URL is still pending.
+- Demo inputs: sample photos and sample MP4/WebM files. They are inputs shown in the dashboard, not the project walkthrough itself.
 
-- Included checkpoints: `experiments/EXP-002/weights/best.pt` and `yolov8n.pt`; both are small enough for a normal GitHub repository.
-- Dataset images and labels are excluded. They must be obtained and prepared separately for training/evaluation.
-- Runtime inspection history and uploaded user images are excluded.
-- Kaggle account files, access tokens, and setup installers must never be added.
+## Current evidence boundaries
 
-## Before sharing the demo
+- NEU-DET detector: three saved 100-epoch experiments; EXP-002 selected.
+- Llama + ExecuTorch: local laptop export and CPU smoke run recorded; no Arm-board deployment verified.
+- Kria KV260: small CPU-only smoke run on six images; no FPGA/DPU, camera, or power result.
+- Renesas: protocol and source template present; board-specific build, flash, and UART exchange not verified.
+- Private model files, tokens, personal notes/prompts, local logs, and runtime environments must not be uploaded.
 
-- Open `README.md` and `EdgeInspect-AI_Project_Status.pdf` and check the model figures against `evaluation/`.
-- The live laptop dashboard link was last checked responding on 15 Oct 2026. Recheck it before sharing; it depends on the laptop and dashboard being online.
-- The official challenge page checked 29 Oct 2026 lists Phase 1 submission as **23 Nov 2026** and Phase 2 as **5 Feb 2027**. Recheck the page before submission: https://arm-education.github.io/Arm-Developer-Labs/Bharat_AI_SoC_2026_27.html
-- Raspberry Pi, Hailo, and ExecuTorch results have not been verified in this project snapshot. PS5 requires Llama + ExecuTorch; the current advisor remains rule-based.
+Official page: https://arm-education.github.io/Arm-Developer-Labs/Bharat_AI_SoC_2026_27.html

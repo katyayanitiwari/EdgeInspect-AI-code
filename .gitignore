@@ -2,6 +2,7 @@
 .venv/
 __pycache__/
 *.py[cod]
+.git/
 
 # Dataset and runtime outputs (download/prepare locally)
 dataset/raw/
@@ -20,6 +21,8 @@ experiments/*_train_log.txt
 !yolov8n.pt
 !experiments/EXP-002/weights/best.pt
 *.onnx
+!deployment/kv260/fpga_candidate/EXP-002_best.onnx
+!deployment/kv260/usb_transfer/deployment/kv260/fpga_candidate/EXP-002_best.onnx
 *.hef
 *.pte
 
@@ -30,6 +33,11 @@ deployment/kaggle_upload/output/
 
 # Private notes, personal prompts, machine logs and installers: do not upload
 MY_NOTES_Done_and_Left.pdf
+EdgeInspect-AI-Private-Local-Files/
+EdgeInspect-AI-Windows-First/
+EdgeInspect-AI-*-First.zip
+EdgeInspect-AI-*-starter.zip
+*.zip
 RESUME_PROMPT.md
 EdgeInspect-AI_RESUME_PROMPT.md
 edgeinspect-dashboard.*
@@ -45,3 +53,6 @@ reports/EdgeInspect-AI_Vision_Progress.pdf
 *.key
 .env
 .env.*
+
+# Private gated Llama weights, tokens/cache, and local ExecuTorch environment
+LOCAL_ONLY_DO_NOT_UPLOAD/

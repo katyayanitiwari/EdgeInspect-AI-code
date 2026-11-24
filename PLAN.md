@@ -3,23 +3,27 @@
 Start: Day 1 = 27 Sep 2026. End: Day 15 = 11 Oct 2026.
 Status keys: [ ] todo, [~] in progress, [x] done.
 
-## Refreshed project snapshot — 29 Oct 2026
+## Refreshed project snapshot — 30 Oct 2026
 
-This is a documentation refresh based on the saved project files. The latest model measurements in the experiment records are from 9 Oct. The local and public dashboard links last returned HTTP 200 on 15 Oct; they were not rechecked for this refresh. No Raspberry Pi, Hailo, or ExecuTorch measurements have been added.
+This is a documentation refresh based on saved project files. The latest model measurements are from 9 Oct. The local and public dashboard links last returned HTTP 200 on 15 Oct; they were not rechecked for this refresh. No Kria KV260 or Renesas RA6E2 deployment/benchmark has been completed.
 
 - [x] EXP-001 (YOLOv8n 640), EXP-002 (YOLOv8n 320), and EXP-003 (YOLO11n 640): 100 epochs and held-out test evaluation recorded.
 - [x] EXP-002 selected for the laptop dashboard: mAP50 0.7702, mAP50–95 0.4361, measured laptop CPU total 36.65 ms/image on the saved test run.
 - [x] FP32 ONNX export and evaluation recorded; PyTorch remains selected due to the higher saved test metrics.
 - [x] Laptop prototype includes image/webcam and video input, QR/barcode reading, rule-based severity/advice, inspection IDs, and SQLite history.
+- [~] Kria KV260 path prepared: AMD first-boot guide, read-only system report, Windows-to-board transfer notes, and CPU smoke benchmark are in `deployment/kv260/`. Board boot, runtime install, and model inference still require the physical board.
+- [~] Renesas RA6E2 interface prepared: bounded UART protocol, KV260 serial sender, and Renesas FSP source template are in `deployment/renesas/` and `deployment/kv260/`. Exact board variant/pin routing, project build, flash, and board-to-board test remain pending.
+- [ ] Select a documented matching Vitis AI/DPU release and KV260 platform only after the CPU baseline and actual Linux image are known.
 - [ ] Review false positives and misses, with attention to crazing and rolled-in scale. The model has produced false detections on unrelated scenes; it is not a general-purpose product defect model.
 - [ ] Collect and label representative target-product images; fine-tune and evaluate only after data are available.
-- [ ] Confirm Raspberry Pi/camera hardware availability and measure inference on the actual target device.
+- [ ] Boot Kria KV260, capture its OS/Python/aarch64 report, install a compatible CPU runtime, and measure the existing steel model on-board.
+- [ ] Confirm the exact Renesas board variant (FPB-RA6E2 / EK-RA6E2 / other), configure FSP UART pins using its manual, then measure protocol ACK exchange with KV260.
 - [ ] Implement and verify the Llama-family advisor with ExecuTorch on the target device.
 - [ ] Verify an optional Hailo path with official documentation and actual hardware.
 - [ ] Complete end-to-end offline validation, measured device benchmarks, technical report, and demo.
 - [ ] Recheck official challenge dates and submission requirements before submission.
 
-The original 15-day schedule below is retained as a historical plan. Its dates have passed; use the task list in this refreshed snapshot to continue.
+The original 15-day schedule below is retained as a historical plan. Its dates have passed; use the task list in this refreshed snapshot to continue. Windows remains the development machine; the KV260 target application runs on a compatible Linux image on the board.
 
 ## Scope (nothing cut)
 Vision baseline + improvements (YOLOv8n 640, YOLOv8n 320, YOLO11n), FP32/FP16/INT8 comparison,

@@ -8,11 +8,12 @@ Run (project root):
 then open http://127.0.0.1:7860 in the browser.
   .\.venv\Scripts\python.exe app\dashboard.py --share   (also prints a temporary public link)
 
-Model: newest of experiments/EXP-001/weights/best.pt, then last.pt, then the SANITY weights.
-While EXP-001 is still training, the dashboard reloads the weights when the file changes and shows
-how many epochs the model has been trained for.
+Model: EXP-002 is preferred; older training checkpoints are fallback candidates.
+Set EDGEINSPECT_REMOTE_URL to use the optional remote KV260 CPU endpoint for image/webcam
+and sampled video inference. The endpoint is not an FPGA/DPU path.
 """
 import csv
+import os
 import sys
 import time
 from pathlib import Path
@@ -23,11 +24,13 @@ import gradio as gr
 from ultralytics import YOLO
 
 ROOT = Path(__file__).resolve().parents[1]
+REMOTE_INFERENCE_URL = os.environ.get("EDGEINSPECT_REMOTE_URL", "").strip()
 sys.path.insert(0, str(ROOT))
 from inference.advisor import advise  # noqa: E402
 from inference.detect import draw, run_one  # noqa: E402
 from inference import inspection_log  # noqa: E402
 from inference.severity import load_rules  # noqa: E402
+from inference.remote_client import RemoteInferenceError, inspect_frame as inspect_remote_frame  # noqa: E402
 
 CANDIDATES = [ROOT / "experiments" / "EXP-002" / "weights" / "best.pt",
               ROOT / "experiments" / "EXP-001" / "weights" / "last.pt",
@@ -273,59 +276,70 @@ def inspect(image_rgb, source_label):
                 [], "No defects were reported because this image was not inspected. "
                 "Use a close-up steel-surface image or a NEU-DET test example.",
                 hist, stats, [], format_codes(codes))
-    scene_result = get_person_model().predict(
-        frame, imgsz=320, conf=0.25, verbose=False
-    )[0]
-    has_person = any(int(cls) == 0 for cls in scene_result.boxes.cls)
-    item = find_handheld_item(scene_result, frame.shape) if has_person else None
-
-    if has_person and item is None:
-        rejected = draw_codes(frame, codes)
-        cv2.putText(rejected, "INPUT SKIPPED - NO SEPARATE ITEM FOUND", (8, 28),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 2)
-        hist, stats = history()
-        return (cv2.cvtColor(rejected, cv2.COLOR_BGR2RGB),
-                "## Input skipped: no separate item detected\nNo steel-defect prediction was run.",
-                [], "Keep the product visible and in focus. This prototype can inspect a separate "
-                "item crop when it is held, but it cannot inspect a hand by itself.", hist, stats, [],
-                format_codes(codes))
-
-    model, path = get_model()
-    handheld = item is not None
+    path = None
     item_roi = None
-    if handheld:
-        _, (x1f, y1f, x2f, y2f), _ = item
-        x1, y1, x2, y2 = (max(0, int(x1f)), max(0, int(y1f)),
-                          min(frame.shape[1], int(x2f)), min(frame.shape[0], int(y2f)))
-        crop = frame[y1:y2, x1:x2]
-        if crop.size == 0:
-            raise gr.Error("Could not crop the handheld item. Retake the image.")
-        report, _ = run_one(model, crop, RULES, imgsz=640)
-        for defect in report["defects"]:
-            bx1, by1, bx2, by2 = defect["xyxy"]
-            defect["xyxy"] = [bx1 + x1, by1 + y1, bx2 + x1, by2 + y1]
-        report["decision"] = "MANUAL_REVIEW"
-        report["reasons"].append(
-            "handheld item crop; confirm candidate marks manually because bottle-surface "
-            "performance has not been validated"
-        )
-        report["latency_ms"]["person_filter"] = round(scene_result.speed["inference"], 1)
-        report["latency_ms"]["end_to_end"] += report["latency_ms"]["person_filter"]
-        item_roi = (x1, y1, x2, y2)
-        advice = {
-            "text": "Possible surface marks are shown for manual checking. EXP-002 was trained "
-                    "on NEU-DET steel-surface images; bottle-surface accuracy is not validated. "
-                    "Confirm each marked area before making a quality decision.",
-            "engine": "manual-review guidance",
-        }
-    else:
-        report, _ = run_one(model, frame, RULES, imgsz=640)
+    handheld = False
+    if REMOTE_INFERENCE_URL:
+        try:
+            report, remote_annotated = inspect_remote_frame(frame, REMOTE_INFERENCE_URL)
+        except RemoteInferenceError as exc:
+            raise gr.Error(f"Remote KV260 inference failed: {exc}") from exc
         advice = advise(report)
+        annotated = remote_annotated
+    else:
+        scene_result = get_person_model().predict(
+            frame, imgsz=320, conf=0.25, verbose=False
+        )[0]
+        has_person = any(int(cls) == 0 for cls in scene_result.boxes.cls)
+        item = find_handheld_item(scene_result, frame.shape) if has_person else None
+
+        if has_person and item is None:
+            rejected = draw_codes(frame, codes)
+            cv2.putText(rejected, "INPUT SKIPPED - NO SEPARATE ITEM FOUND", (8, 28),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 0, 255), 2)
+            hist, stats = history()
+            return (cv2.cvtColor(rejected, cv2.COLOR_BGR2RGB),
+                    "## Input skipped: no separate item detected\nNo steel-defect prediction was run.",
+                    [], "Keep the product visible and in focus. This prototype can inspect a separate "
+                    "item crop when it is held, but it cannot inspect a hand by itself.", hist, stats, [],
+                    format_codes(codes))
+
+        model, path = get_model()
+        handheld = item is not None
+        if handheld:
+            _, (x1f, y1f, x2f, y2f), _ = item
+            x1, y1, x2, y2 = (max(0, int(x1f)), max(0, int(y1f)),
+                              min(frame.shape[1], int(x2f)), min(frame.shape[0], int(y2f)))
+            crop = frame[y1:y2, x1:x2]
+            if crop.size == 0:
+                raise gr.Error("Could not crop the handheld item. Retake the image.")
+            report, _ = run_one(model, crop, RULES, imgsz=640)
+            for defect in report["defects"]:
+                bx1, by1, bx2, by2 = defect["xyxy"]
+                defect["xyxy"] = [bx1 + x1, by1 + y1, bx2 + x1, by2 + y1]
+            report["decision"] = "MANUAL_REVIEW"
+            report["reasons"].append(
+                "handheld item crop; confirm candidate marks manually because bottle-surface "
+                "performance has not been validated"
+            )
+            report["latency_ms"]["person_filter"] = round(scene_result.speed["inference"], 1)
+            report["latency_ms"]["end_to_end"] += report["latency_ms"]["person_filter"]
+            item_roi = (x1, y1, x2, y2)
+            advice = {
+                "text": "Possible surface marks are shown for manual checking. EXP-002 was trained "
+                        "on NEU-DET steel-surface images; bottle-surface accuracy is not validated. "
+                        "Confirm each marked area before making a quality decision.",
+                "engine": "manual-review guidance",
+            }
+        else:
+            report, _ = run_one(model, frame, RULES, imgsz=640)
+            advice = advise(report)
 
     for index, defect in enumerate(report["defects"], 1):
         defect["id"] = f"D{index:02d}"
     gallery = detection_crops(frame, report["defects"])
-    annotated = draw(frame, report)
+    if not REMOTE_INFERENCE_URL:
+        annotated = draw(frame, report)
     annotated = draw_codes(annotated, codes)
     if item_roi:
         x1, y1, x2, y2 = item_roi
@@ -341,7 +355,8 @@ def inspect(image_rgb, source_label):
     con = inspection_log.connect()
     inspection_id = inspection_log.log(
         con, report, advice, source=source_label or "upload",
-        weights=str(path.relative_to(ROOT)), image_path=str(img_path.relative_to(ROOT))
+        weights=(str(path.relative_to(ROOT)) if path else f"remote KV260 CPU: {REMOTE_INFERENCE_URL}"),
+        image_path=str(img_path.relative_to(ROOT))
     )
     cv2.putText(annotated, f"Inspection #{inspection_id}", (8, annotated.shape[0] - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
@@ -349,7 +364,12 @@ def inspect(image_rgb, source_label):
 
     table = [[d["id"], d["cls"], f"{d['conf']:.2f}", d["area_pct"], d["severity"],
               "yes" if d["uncertain"] else ""] for d in report["defects"]]
-    if handheld:
+    if REMOTE_INFERENCE_URL:
+        headline = (f"## Inspection #{inspection_id} — {report['decision']} (remote KV260 CPU)\n"
+                    f"Severity **{report['severity']}**, {report['defect_count']} defect(s), "
+                    f"{report['latency_ms']['end_to_end']:.0f} ms on KV260 CPU\n\n"
+                    "Model: EXP-002 served by the configured KV260 endpoint; FPGA/DPU is not used.")
+    elif handheld:
         headline = (f"## Inspection #{inspection_id} — MANUAL_REVIEW, handheld item crop\nPossible candidate mark(s): "
                     f"{report['defect_count']}; {report['latency_ms']['end_to_end']:.0f} ms on laptop CPU\n\n"
                     f"{model_status(path)}")
@@ -377,7 +397,10 @@ def inspect_video(video_path, source_label):
     fps = fps if fps and fps > 0 else 1.0
     frame_step = max(1, int(round(fps)))
     max_samples = 120  # process at most the first two minutes at one frame per second
-    model, weights = get_model()
+    if REMOTE_INFERENCE_URL:
+        model, weights = None, None
+    else:
+        model, weights = get_model()
     video_dir = ROOT / "logs" / "videos"
     video_dir.mkdir(parents=True, exist_ok=True)
     output_path = video_dir / f"inspection_{time.strftime('%Y%m%d_%H%M%S')}.webm"
@@ -409,7 +432,14 @@ def inspect_video(video_path, source_label):
                                 (8, 55), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
                     frame_rows.append([timestamp, "—", "Not inspected", "—", "—", reason])
                 else:
-                    report, _ = run_one(model, frame, RULES, imgsz=320)
+                    if REMOTE_INFERENCE_URL:
+                        try:
+                            report, annotated = inspect_remote_frame(frame, REMOTE_INFERENCE_URL)
+                        except RemoteInferenceError as exc:
+                            raise gr.Error(f"Remote KV260 inference failed: {exc}") from exc
+                    else:
+                        report, _ = run_one(model, frame, RULES, imgsz=320)
+                        annotated = draw(frame, report)
                     total_inference_ms += report["latency_ms"]["end_to_end"]
                     for defect_index, defect in enumerate(report["defects"], 1):
                         defect_id = f"F{sample_index + 1:03d}-D{defect_index:02d}"
@@ -422,7 +452,6 @@ def inspect_video(video_path, source_label):
                     if not report["defects"]:
                         frame_rows.append([timestamp, "—", "No candidate", "—", "—",
                                            "No detection above threshold"])
-                    annotated = draw(frame, report)
                     annotated = draw_codes(annotated, codes)
 
                 cv2.putText(annotated, timestamp, (8, annotated.shape[0] - 10),
@@ -464,7 +493,9 @@ def inspect_video(video_path, source_label):
     con = inspection_log.connect()
     inspection_id = inspection_log.log(
         con, report, advice, source=source_label or Path(video_path).name,
-        weights=str(weights.relative_to(ROOT)), image_path=str(output_path.relative_to(ROOT))
+        weights=(str(weights.relative_to(ROOT)) if weights else
+                 f"remote KV260 CPU: {REMOTE_INFERENCE_URL}"),
+        image_path=str(output_path.relative_to(ROOT))
     )
     hist, stats = history(con)
     con.close()
@@ -473,7 +504,9 @@ def inspect_video(video_path, source_label):
         f"## Video inspection #{inspection_id} — MANUAL_REVIEW\n"
         f"Sampled **{sample_index} frame(s)** at approximately 1 frame/second; "
         f"**{len(all_detections)} candidate frame hit(s)**. "
-        f"Candidate hits are not unique defect counts.\n\n{model_status(weights)}"
+        f"Candidate hits are not unique defect counts.\n\n"
+        + ("Model: EXP-002 served by remote KV260 CPU endpoint; FPGA/DPU is not used."
+           if REMOTE_INFERENCE_URL else model_status(weights))
     )
     return str(output_path), headline, frame_rows, codes_text, hist, stats
 
@@ -494,6 +527,9 @@ def history(con=None):
 def build():
     with gr.Blocks(title="EdgeInspect-AI") as demo:
         gr.Markdown("# EdgeInspect-AI")
+        if REMOTE_INFERENCE_URL:
+            gr.Markdown("Remote inference is enabled: inspection frames are sent to the configured "
+                        "KV260 CPU endpoint over your network. FPGA/DPU acceleration is not used.")
         with gr.Tab("Inspect"):
             with gr.Row():
                 with gr.Column():
@@ -565,6 +601,9 @@ def build():
 
 def warm_up():
     """Load weights and run one dummy inference so the first real inspection is not slow."""
+    if REMOTE_INFERENCE_URL:
+        print(f"Remote inference selected at {REMOTE_INFERENCE_URL}; local YOLO warm-up skipped")
+        return
     import numpy as np
     model, path = get_model()
     model.predict(np.zeros((640, 640, 3), dtype=np.uint8), imgsz=640, verbose=False)
