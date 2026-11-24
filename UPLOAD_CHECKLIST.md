@@ -4,7 +4,7 @@ Updated 24 November 2026 from the organizer email received 23 November. The emai
 
 ## Required items from the organizer email
 
-- [ ] Public GitHub/GitLab repository URL with source code and relevant documentation
+- [x] Public GitHub repository with source code and relevant documentation: https://github.com/katyayanitiwari/EdgeInspect-AI-code
 - [ ] Review the prepared two-minute video, upload it publicly to YouTube or Google Drive, and copy its URL; preferred 1080p, 16:9, MP4
 - [ ] Final project report PDF/DOCX covering methodology, results, hardware utilization, and optimization techniques
 - [ ] Mentor review/approval if available (recommended by the organizer)
