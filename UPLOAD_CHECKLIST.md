@@ -6,7 +6,7 @@ Updated 24 November 2026 from the organizer email received 23 November. The emai
 
 - [x] Public GitHub repository with source code and relevant documentation: https://github.com/katyayanitiwari/EdgeInspect-AI-code
 - [ ] Review the prepared two-minute video, upload it publicly to YouTube or Google Drive, and copy its URL; preferred 1080p, 16:9, MP4
-- [ ] Final project report PDF/DOCX covering methodology, results, hardware utilization, and optimization techniques
+- [x] Final project report PDF covering methodology, results, hardware utilization, and optimization techniques: `reports/EdgeInspect-AI_Phase1_Technical_Report.pdf`
 - [ ] Mentor review/approval if available (recommended by the organizer)
 - [ ] Enter repository URL, video URL, and report in the designated form fields
 - [ ] Submit once only; organizer says duplicate submissions will not replace the first
