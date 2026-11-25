@@ -1,6 +1,6 @@
 # BHARAT EDGE — source package guide
 
-The curated source archive is `EdgeInspect-AI-Phase1-Source.zip` in this folder. It contains the Windows dashboard and its dependencies, the selected EXP-002 detector checkpoint, evaluation records, training/evaluation scripts, public static-demo source/assets, KV260 and Renesas source/templates, ExecuTorch adapter/export instructions, and the evidence-based Phase 1 report. The separately prepared two-minute walkthrough is `demo/EdgeInspect-AI-Phase1-Demo.mp4`; it must be reviewed and uploaded publicly to YouTube or Google Drive to obtain the required video URL. The MP4 is kept outside the source archive for separate video hosting.
+The public repository contains the Windows dashboard and its dependencies, the selected EXP-002 detector checkpoint, evaluation records, training/evaluation scripts, public static-demo source/assets, KV260 and Renesas source/templates, ExecuTorch adapter/export instructions, the Phase 1 report, and the two-minute walkthrough at `demo/EdgeInspect-AI-Phase1-Demo.mp4`. The walkthrough should also be uploaded publicly to YouTube or Google Drive if the submission form requires a hosted video URL. The curated ZIP archive is maintained separately in the local BHARAT EDGE folder and is not duplicated in this repository.
 
 ## Run the Windows application
 
@@ -24,4 +24,4 @@ Kria CPU smoke scripts/record and FPGA investigation notes are included. The rec
 
 Private/gated model artifacts, tokens, personal notes/prompts, local logs, Python virtual environments, inspection history, datasets, temporary outputs, and the fictional sample report are excluded. The package manifest lists included files. The sample MP4/WebM files are demo inputs; they are **not** a recording of the project demonstration required for submission.
 
-The sample MP4/WebM files are dashboard inputs. The project walkthrough is a generated, captioned asset-based video, not a live GUI capture. Before submitting, review it, verify the GitHub repository URL, challenge form requirements, public demo links, and public video URL.
+The sample MP4/WebM files are dashboard inputs. The project walkthrough is a generated, captioned asset-based video, not a live GUI capture. Before submitting, review it and verify the challenge form requirements, public demo links, and any required hosted video URL.

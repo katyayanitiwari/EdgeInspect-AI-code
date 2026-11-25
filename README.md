@@ -4,7 +4,7 @@ EdgeInspect-AI is a prototype for inspecting steel-surface defects and recording
 
 ## Project status
 
-**Documentation refreshed 24 November 2026.** Experiment figures below come from saved records. The free public browser demo page, ONNX model, and inference/code-reading libraries returned HTTP 200 on 13 November 2026. Camera permission and end-to-end browser speed have not been measured.
+**Documentation refreshed 25 November 2026.** Experiment figures below come from saved records. The two-minute captioned project walkthrough is included at `demo/EdgeInspect-AI-Phase1-Demo.mp4`. It is assembled from saved model outputs and project assets, not a live desktop capture. The free public browser demo page, ONNX model, and inference/code-reading libraries returned HTTP 200 on 13 November 2026. Camera permission and end-to-end browser speed have not been measured.
 
 Three 100-epoch experiments were evaluated on the 270-image held-out test split. EXP-002 (YOLOv8n at 320 pixels) is selected for the laptop dashboard because its test accuracy was similar to the other runs and its recorded laptop CPU latency was lower. Crazing and rolled-in scale were weaker classes in the saved class-level results.
 

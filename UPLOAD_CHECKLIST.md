@@ -1,11 +1,11 @@
 # Phase 1 submission checklist
 
-Updated 24 November 2026 from the organizer email received 23 November. The email sets the deadline to **25 November 2026, 11:59 pm IST**. The public challenge page still shows 23 November; follow the newer organizer email and recheck the submission form.
+Updated 25 November 2026 from the organizer email received 23 November. The email sets the deadline to **25 November 2026, 11:59 pm IST**. The public challenge page still shows 23 November; follow the newer organizer email and recheck the submission form.
 
 ## Required items from the organizer email
 
 - [x] Public GitHub repository with source code and relevant documentation: https://github.com/katyayanitiwari/EdgeInspect-AI-code
-- [ ] Review the prepared two-minute video, upload it publicly to YouTube or Google Drive, and copy its URL; preferred 1080p, 16:9, MP4
+- [ ] Video file is included in the public repository at `demo/EdgeInspect-AI-Phase1-Demo.mp4`; upload it publicly to YouTube or Google Drive and copy that URL if the form requires it. Preferred 1080p, 16:9, MP4.
 - [x] Final project report PDF covering methodology, results, hardware utilization, and optimization techniques: `reports/EdgeInspect-AI_Phase1_Technical_Report.pdf`
 - [ ] Mentor review/approval if available (recommended by the organizer)
 - [ ] Enter repository URL, video URL, and report in the designated form fields
